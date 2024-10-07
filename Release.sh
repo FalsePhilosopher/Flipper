@@ -21,7 +21,7 @@ RELEASE_FOLDER="$BASE_FOLDER/$RELEASE_VERSION"
 SHDL="$RELEASE_FOLDER/dl.sh"
 PS1DL="$RELEASE_FOLDER/dl.ps1"
 NOTES="$RELEASE_FOLDER/notes.md"
-ARCHIVE1="$RELEASE_FOLDER/Flipper.tar.zst"
+ARCHIVE="$RELEASE_FOLDER/Flipper.tar.zst"
 LOG="$RELEASE_FOLDER/$RELEASE_VERSION.log"
 
 copy() {
@@ -111,5 +111,5 @@ echo "SHA256 values updated." | tee -a "$LOG" && sleep 5
 
 cd "$WORKING_DIR/Flipper" || { echo "Failed to navigate back to Flipper repo folder." | tee -a "$LOG"; echo "Script errored at $(date)" | tee -a "$LOG"; exit 1; }
 echo "Creating Github release" | tee -a "$LOG"
-gh release create "$RELEASE_TAG" --title "$RELEASE_TAG" --notes-file "$NOTES" --latest "$ARCHIVE1" "$SHDL" "$PS1DL" && echo "GitHub release created." | tee -a "$LOG" || { echo "Failed to create GitHub release." | tee -a "$LOG"; echo "Script errored at $(date)" | tee -a "$LOG"; exit 1; }
+gh release create "$RELEASE_TAG" --title "$RELEASE_TAG" --notes-file "$NOTES" --latest "$ARCHIVE" "$SHDL" "$PS1DL" && echo "GitHub release created." | tee -a "$LOG" || { echo "Failed to create GitHub release." | tee -a "$LOG"; echo "Script errored at $(date)" | tee -a "$LOG"; exit 1; }
 echo "Script finished sucessfully at $(date)" | tee -a "$LOG"
