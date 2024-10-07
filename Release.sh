@@ -93,14 +93,17 @@ echo "Updating SHA256 values in script files" | tee -a "$LOG"
 TMP_HASH_FILE=$(mktemp /tmp/hash.XXXXXX) || { echo "Failed to create temporary hash file." | tee -a "$LOG"; echo "Script errored at $(date)" | tee -a "$LOG"; exit 1; }
 cat "$RELEASE_FOLDER/SHA256" | sed 's/ .*//' > "$TMP_HASH_FILE" || { echo "Failed to extract hash from SHA256 file." | tee -a "$LOG"; echo "Script errored at $(date)" | tee -a "$LOG"; exit 1; }
 LATEST_HASH=$(<"$TMP_HASH_FILE") || { echo "Failed to retrieve latest SHA256 hash." | tee -a "$LOG"; echo "Script errored at $(date)" | tee -a "$LOG"; exit 1; }
-echo "Expected hash value" | tee -a "$LOG"
+echo "Expected SHA256 hash value" | tee -a "$LOG"
 cat "$RELEASE_FOLDER/SHA256" | tee -a "$LOG"
-echo "sh.dl value." | tee -a "$LOG"
-sed -i "2s/.*/SHA256='$LATEST_HASH'/" "$SHDL" && sed -n '2p' $SHDL | tee -a "$LOG" || { echo "Failed to update SHA256 in dl.sh." | tee -a "$LOG"; echo "Script errored at $(date)" | tee -a "$LOG"; exit 1; }
-echo "dl.ps1 value" | tee -a "$LOG"
-sed -i "2s/.*/\$SHA256 = \"$LATEST_HASH\"/" "$PS1DL" && sed -n '2p' $PS1DL | tee -a "$LOG" || { echo "Failed to update SHA256 in dl.ps1." | tee -a "$LOG"; echo "Script errored at $(date)" | tee -a "$LOG"; exit 1; }
-echo "notes.md value" | tee -a "$LOG"
-sed -i "2s/.*/SHA256=$LATEST_HASH/" "$NOTES" && sed -n '2p' $NOTES | tee -a "$LOG" || { echo "Failed to update SHA256 in notes.md." | tee -a "$LOG"; echo "Script errored at $(date)" | tee -a "$LOG"; exit 1; }
+sed -i "2s/.*/SHA256='$LATEST_HASH'/" "$SHDL" || { echo "Failed to update SHA256 in dl.sh." | tee -a "$LOG"; echo "Script errored at $(date)" | tee -a "$LOG"; exit 1; }
+echo "sh.dl SHA256 value." | tee -a "$LOG"
+sed -n '2p' $SHDL | tee -a "$LOG"
+sed -i "2s/.*/\$SHA256 = \"$LATEST_HASH\"/" "$PS1DL" || { echo "Failed to update SHA256 in dl.ps1." | tee -a "$LOG"; echo "Script errored at $(date)" | tee -a "$LOG"; exit 1; }
+echo "dl.ps1 SHA256 value" | tee -a "$LOG"
+sed -n '2p' $PS1DL | tee -a "$LOG"
+sed -i "2s/.*/SHA256=$LATEST_HASH/" "$NOTES" || { echo "Failed to update SHA256 in notes.md." | tee -a "$LOG"; echo "Script errored at $(date)" | tee -a "$LOG"; exit 1; }
+echo "notes.md SHA256 value" | tee -a "$LOG"
+sed -n '2p' $NOTES | tee -a "$LOG"
 rm "$TMP_HASH_FILE" || { echo "Failed to remove temporary hash file." | tee -a "$LOG"; echo "Script errored at $(date)" | tee -a "$LOG"; exit 1; }
 echo "SHA256 values updated." | tee -a "$LOG" && sleep 5
 
