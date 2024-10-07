@@ -33,6 +33,24 @@ check() {
     echo "There will be a single hash check error as there are two different hash files included for windows compatibility and one will throw an error for the other, so if there is a single hash error then it was successful."
   fi
 }
+concat_splits() {
+  local split_files
+  split_files=$(ls *.zst.* 2> /dev/null)
+  
+  if [ -n "$split_files" ]; then
+    echo "Split archive detected. Concatenating them into one"
+    cat Flipper.tar.zst.* > Flipper.tar.zst
+    if [ $? -eq 0 ]; then
+      echo "Successfully concatenated split archive."
+      rm Flipper.tar.zst.*
+    else
+      echo "Failed to concatenate split archives." && exit 1
+    fi
+  else
+    echo "No split archives found."
+  fi
+}
+
 if ! command -v zstd &> /dev/null
 then
     echo "zstd could not be found, please install it." && sleep 20
@@ -41,6 +59,7 @@ fi
 
 cd /tmp/ || { echo "Failed to change directory to /tmp/"; exit 1; }
 obtainium
+concat_splits
 echo "Extracting Flipper.tar.zst"
 if tar --use-compress-program="zstd -d -T0" -xvf "Flipper.tar.zst" --directory "$HOME/Downloads"; then
   echo "Successfully extracted Flipper.tar.zst"
