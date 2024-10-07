@@ -63,7 +63,7 @@ then
 fi
 
 cd "$WORKING_DIR/Flipper" || { echo "Failed to navigate to Flipper repo folder." | tee -a "$LOG"; echo "Script errored at $(date)" | tee -a "$LOG"; exit 1; }
-#git pull --recurse-submodules && echo "Pulling updates complete." | tee -a "$LOG" || { echo "Failed to update Flipper repo." | tee -a "$LOG"; echo "Script errored at $(date)" | tee -a "$LOG"; exit 1; }
+git pull --recursive && echo "Pulling updates complete." | tee -a "$LOG" || { echo "Failed to update Flipper repo." | tee -a "$LOG"; echo "Script errored at $(date)" | tee -a "$LOG"; exit 1; }
 cd "$WORKING_DIR" || { echo "Failed to return to working directory." | tee -a "$LOG"; echo "Script errored at $(date)" | tee -a "$LOG"; exit 1; }
 copy
 cd "$RELEASE_FOLDER/Flipper" || { echo "Failed to navigate to Flipper release folder." | tee -a "$LOG"; echo "Script errored at $(date)" | tee -a "$LOG"; exit 1; }
