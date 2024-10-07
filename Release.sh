@@ -66,6 +66,7 @@ cd "$WORKING_DIR/Flipper" || { echo "Failed to navigate to Flipper repo folder."
 echo "Pulling repo updates" | tee -a "$LOG"
 gh repo sync && echo "Pulling updates complete." | tee -a "$LOG" || { echo "Failed to update Flipper repo." | tee -a "$LOG"; echo "Script errored at $(date)" | tee -a "$LOG"; exit 1; }
 cd "$WORKING_DIR" || { echo "Failed to return to working directory." | tee -a "$LOG"; echo "Script errored at $(date)" | tee -a "$LOG"; exit 1; }
+
 copy
 cd "$RELEASE_FOLDER/Flipper" || { echo "Failed to navigate to Flipper release folder." | tee -a "$LOG"; echo "Script errored at $(date)" | tee -a "$LOG"; exit 1; }
 echo "Trimming .git folder" | tee -a "$LOG"
@@ -95,7 +96,7 @@ LATEST_HASH=$(<"$TMP_HASH_FILE") || { echo "Failed to retrieve latest SHA256 has
 cat "$RELEASE_FOLDER/SHA256" | tee -a "$LOG"
 sed -i "2s/.*/SHA256='$LATEST_HASH'/" "$SHDL" && sed -n '2p' $SHDL | tee -a "$LOG" || { echo "Failed to update SHA256 in dl.sh." | tee -a "$LOG"; echo "Script errored at $(date)" | tee -a "$LOG"; exit 1; }
 sed -i "2s/.*/\$SHA256 = \"$LATEST_HASH\"/" "$PS1DL" && sed -n '2p' $PS1DL | tee -a "$LOG" || { echo "Failed to update SHA256 in dl.ps1." | tee -a "$LOG"; echo "Script errored at $(date)" | tee -a "$LOG"; exit 1; }
-sed -i "2s/.*/Current SHA256='$LATEST_HASH'/" "$NOTES" && sed -n '2p' $NOTES | tee -a "$LOG" || { echo "Failed to update SHA256 in notes.md." | tee -a "$LOG"; echo "Script errored at $(date)" | tee -a "$LOG"; exit 1; }
+sed -i "2s/.*/SHA256='$LATEST_HASH'/" "$NOTES" && sed -n '2p' $NOTES | tee -a "$LOG" || { echo "Failed to update SHA256 in notes.md." | tee -a "$LOG"; echo "Script errored at $(date)" | tee -a "$LOG"; exit 1; }
 rm "$TMP_HASH_FILE" || { echo "Failed to remove temporary hash file." | tee -a "$LOG"; echo "Script errored at $(date)" | tee -a "$LOG"; exit 1; }
 echo "SHA256 values updated." | tee -a "$LOG" && sleep 5
 
