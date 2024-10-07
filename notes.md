@@ -1,5 +1,5 @@
 # Compressed Snapshot Releases
-SHA256='16589eb2002639b88396aad9c4813bd69d4f2fc9390a28d8b8ec4a58afb4342f'
+SHA256=16589eb2002639b88396aad9c4813bd69d4f2fc9390a28d8b8ec4a58afb4342f
 
 Using `git clone --recursive` to download the Flipper repo and all of it's submodules will download 6.7GB of data, with the .git folder stripped and compressed with zstd it produces a 1.9GB archive giving a significant saving's on bandwidth. The final size after extraction is 3.9GB. 
 
