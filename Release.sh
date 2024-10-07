@@ -33,15 +33,17 @@ copy() {
     cp dl.sh "$RELEASE_FOLDER" && echo "dl.sh copying complete." | tee -a "$LOG" || { echo "Failed to copy dl.sh." | tee -a "$LOG"; echo "Script errored at $(date)" | tee -a "$LOG"; exit 1; }
     cp dl.ps1 "$RELEASE_FOLDER" && echo "dl.ps1 copying complete." | tee -a "$LOG" || { echo "Failed to copy dl.ps1." | tee -a "$LOG"; echo "Script errored at $(date)" | tee -a "$LOG"; exit 1; }
     cp notes.md "$RELEASE_FOLDER" && echo "notes.md copying complete." | tee -a "$LOG" || { echo "Failed to copy notes.md." | tee -a "$LOG"; echo "Script errored at $(date)" | tee -a "$LOG"; exit 1; }
-    
 }
+
 check() {
     echo "Calculating BLAKE3 checksums..." | tee -a "$LOG"
     find -type f \( -not -name "B3.SUM" \) -exec b3sum '{}' \; > B3.SUM && echo "BLAKE3 checksum complete." | tee -a "$LOG" || { echo "BLAKE3 checksum error." | tee -a "$LOG"; echo "Script errored at $(date)" | tee -a "$LOG"; exit 1; }
-
     echo "Calculating SHA256 checksums..." | tee -a "$LOG"
-    find -type f \( -not -name "SHA256" \) -exec sha256sum '{}' \; > SHA256 && sleep 10 && echo "SHA256 checksum complete." | tee -a "$LOG" || { echo "SHA256 checksum error." | tee -a "$LOG"; echo "Script errored at $(date)" | tee -a "$LOG"; exit 1; } && sed 's/[.][/]//1' -i SHA256 && echo "SHA256 checksum trimming complete." | tee -a "$LOG" || { echo "SHA256 checksum trimming error." | tee -a "$LOG"; echo "Script errored at $(date)" | tee -a "$LOG"; exit 1; }
+    find -type f \( -not -name "SHA256" \) -exec sha256sum '{}' \; > SHA256 && sleep 10 && echo "SHA256 checksum complete." | tee -a "$LOG" || { echo "SHA256 checksum error." | tee -a "$LOG"; echo "Script errored at $(date)" | tee -a "$LOG"; exit 1; }
+    # trimming of the SHA256 checksum is necessary to make it *nix/powershell compatible
+    sed 's/[.][/]//1' -i SHA256 && echo "SHA256 checksum trimming complete." | tee -a "$LOG" || { echo "SHA256 checksum trimming error." | tee -a "$LOG"; echo "Script errored at $(date)" | tee -a "$LOG"; exit 1; }
 }
+
 mkdirs() {
 if [ ! -d "$BASE_FOLDER" ]; then
     mkdir "$BASE_FOLDER"
@@ -89,14 +91,14 @@ sha256sum "$RELEASE_FOLDER/Flipper.tar.zst" > "$RELEASE_FOLDER/SHA256" && sleep 
 echo "Removing Flipper release folder." | tee -a "$LOG"
 rm -rf "$RELEASE_FOLDER/Flipper" && sleep 15 && echo "Removing Flipper release folder complete." | tee -a "$LOG" || { echo "Failed to remove Flipper release folder." | tee -a "$LOG"; echo "Script errored at $(date)" | tee -a "$LOG"; exit 1; }
 
-echo "Updating SHA256 values in script files" | tee -a "$LOG"
+echo "Updating SHA256 values in files" | tee -a "$LOG"
 TMP_HASH_FILE=$(mktemp /tmp/hash.XXXXXX) || { echo "Failed to create temporary hash file." | tee -a "$LOG"; echo "Script errored at $(date)" | tee -a "$LOG"; exit 1; }
 cat "$RELEASE_FOLDER/SHA256" | sed 's/ .*//' > "$TMP_HASH_FILE" || { echo "Failed to extract hash from SHA256 file." | tee -a "$LOG"; echo "Script errored at $(date)" | tee -a "$LOG"; exit 1; }
 LATEST_HASH=$(<"$TMP_HASH_FILE") || { echo "Failed to retrieve latest SHA256 hash." | tee -a "$LOG"; echo "Script errored at $(date)" | tee -a "$LOG"; exit 1; }
-echo "Expected SHA256 hash value" | tee -a "$LOG"
+echo "Expected hash value" | tee -a "$LOG"
 cat "$RELEASE_FOLDER/SHA256" | tee -a "$LOG"
 sed -i "2s/.*/SHA256='$LATEST_HASH'/" "$SHDL" || { echo "Failed to update SHA256 in dl.sh." | tee -a "$LOG"; echo "Script errored at $(date)" | tee -a "$LOG"; exit 1; }
-echo "sh.dl SHA256 value." | tee -a "$LOG"
+echo "dl.sh SHA256 value." | tee -a "$LOG"
 sed -n '2p' $SHDL | tee -a "$LOG"
 sed -i "2s/.*/\$SHA256 = \"$LATEST_HASH\"/" "$PS1DL" || { echo "Failed to update SHA256 in dl.ps1." | tee -a "$LOG"; echo "Script errored at $(date)" | tee -a "$LOG"; exit 1; }
 echo "dl.ps1 SHA256 value" | tee -a "$LOG"
